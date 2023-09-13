@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PersonnelDepartment.Models;
+using PersonnelDepartment.View;
 
 namespace PersonnelDepartment
 {
@@ -21,40 +23,44 @@ namespace PersonnelDepartment
     public partial class MainWindow : Window
     {
         private UniversityDirectory universityDirectory = new UniversityDirectory();
-        private List<MyTable> students = new List<MyTable>();
-        private List<MyTable> teachers = new List<MyTable>();
+        private List<PersonsView> personsView = new List<PersonsView>();
+
 
         public MainWindow()
         {
             universityDirectory = Initializer.Initialize();
             InitializeComponent();
             filterLabel.Content = "Фільтр";
-            filter1.IsEnabled = false;
+            filter1.Visibility = Visibility.Hidden;
+            filterLabel.Visibility = Visibility.Hidden;
 
-            foreach (var student in universityDirectory.Students)
+            var mappedStudents = universityDirectory.Students.Select(s => new PersonsView
             {
-                students.Add(new MyTable
-                {
-                    LastName = student.LastName,
-                    FirstName = student.FirstName,
-                    MiddleName = student.MiddleName,
-                    Faculty = student.Department.Faculty.Name,
-                    Group = student.Group.Name,
-                    Department = student.Department.Name
-                });
-            }
+                LastName = s.LastName,
+                FirstName = s.FirstName,
+                MiddleName = s.MiddleName,
+                Faculty = s.Department.Faculty.Name,
+                Group = s.Group.Name,
+                Department = s.Department.Name,
+                IsStudent = true,
+                Childrens = s.Childrens,
+                Parent = s.Parent
+            });
 
-            foreach (var teacher in universityDirectory.Teachers)
+            var mappedTeachers = universityDirectory.Teachers.Select(t => new PersonsView
             {
-                teachers.Add(new MyTable
-                {
-                    LastName = teacher.LastName,
-                    FirstName = teacher.FirstName,
-                    MiddleName = teacher.MiddleName,
-                    Faculty = teacher.Department.Faculty.Name,
-                    Department = teacher.Department.Name
-                });
-            }
+                LastName = t.LastName,
+                FirstName = t.FirstName,
+                MiddleName = t.MiddleName,
+                Faculty = t.Department.Faculty.Name,
+                Department = t.Department.Name,
+                IsTeacher = true,
+                IsDepartmentHead = t.IsDepartmentHead,
+                Childrens = t.Childrens
+            });
+
+            personsView.AddRange(mappedStudents);
+            personsView.AddRange(mappedTeachers);
         }
 
         
@@ -62,12 +68,15 @@ namespace PersonnelDepartment
         private void tables_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             filter1.Items.Clear();
-            filterLabel.Content = "Фільтр";
-            filter1.IsEnabled = true;
+            filterLabel.Visibility= Visibility.Hidden;
+            filter1.Visibility = Visibility.Hidden;
 
             if (tables.SelectedIndex == 0)
             {
-                persons.ItemsSource = students;
+                filterLabel.Visibility = Visibility.Visible;
+                filter1.Visibility = Visibility.Visible;
+
+                persons.ItemsSource = personsView.Where(s => s.IsStudent);
 
                 filterLabel.Content = "Групи";
 
@@ -76,9 +85,13 @@ namespace PersonnelDepartment
                     filter1.Items.Add(group.Name);
                 }
             }
+
             if (tables.SelectedIndex == 1)
             {
-                persons.ItemsSource = teachers;
+                filterLabel.Visibility = Visibility.Visible;
+                filter1.Visibility = Visibility.Visible;
+
+                persons.ItemsSource = personsView.Where(t => t.IsTeacher);
 
                 filterLabel.Content = "Факультети";
 
@@ -87,58 +100,24 @@ namespace PersonnelDepartment
                     filter1.Items.Add(faculty.Name);
                 }
             }
+
             if (tables.SelectedIndex == 2)
             {
-                filter1.IsEnabled = false;
-
-                var studentsWithoutParents = universityDirectory.Students
-                    .Where(s => s.Parent == null)
-                    .Select(s => new
-                    {
-                        s.LastName,
-                        s.FirstName,
-                        s.MiddleName,
-                        Faculty = s.Department.Faculty.Name,
-                        Group = s.Group.Name,
-                        Department = s.Department.Name
-                    });
-
-                persons.ItemsSource = studentsWithoutParents;
+                persons.ItemsSource = personsView
+                    .Where(s => s.IsStudent)
+                    .Where(s => s.Parent is null);
             }
+
             if (tables.SelectedIndex == 3)
             {
-                filter1.IsEnabled = false;
-
-                var departmentHead = universityDirectory.Teachers
-                    .Where(t => t.IsDepartmentHead == true)
-                    .Select(t => new
-                    {
-                        t.LastName,
-                        t.FirstName,
-                        t.MiddleName,
-                        Faculty = t.Department.Faculty.Name,
-                        Department = t.Department.Name
-                    });
-
-                persons.ItemsSource = departmentHead;
+                persons.ItemsSource = personsView.Where(t => t.IsDepartmentHead);
             }
 
             if (tables.SelectedIndex == 4)
             {
-                filter1.IsEnabled = false;
-
-                var departmentHead = universityDirectory.Teachers
-                    .Where(t => t.Childrens is not null)
-                    .Select(t => new
-                    {
-                        t.LastName,
-                        t.FirstName,
-                        t.MiddleName,
-                        Faculty = t.Department.Faculty.Name,
-                        Department = t.Department.Name
-                    });
-
-                persons.ItemsSource = departmentHead;
+                persons.ItemsSource = personsView
+                    .Where(t => t.IsTeacher)
+                    .Where(t => t.Childrens is not null);
             }
         }
 
@@ -146,14 +125,31 @@ namespace PersonnelDepartment
         {
             if (tables.SelectedIndex == 0)
             {
-                var filterSudents = students.Where(s => s.Group == filter1.SelectedValue);
+                var filterSudents = personsView
+                    .Where(s => s.IsStudent)
+                    .Where(s => s.Group?.ToUpper() == filter1.SelectedValue?.ToString()?.ToUpper());
                 persons.ItemsSource = filterSudents;
             }
 
             if (tables.SelectedIndex == 1)
             {
-                var filterTeachers = teachers.Where(t => t.Faculty == filter1.SelectedValue);
+                var filterTeachers = personsView
+                    .Where(t => t.IsTeacher)
+                    .Where(t => t.Faculty?.ToUpper() == filter1.SelectedValue?.ToString()?.ToUpper());
                 persons.ItemsSource = filterTeachers;
+            }
+        }
+
+        private void persons_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (persons.SelectedItem != null)
+            {
+                PersonsView selectedPerson = (PersonsView)persons.SelectedItem;
+
+                EditPerson editPersonView = new EditPerson(selectedPerson);
+                editPersonView.ShowDialog();
+
+                persons.Items.Refresh();
             }
         }
     }

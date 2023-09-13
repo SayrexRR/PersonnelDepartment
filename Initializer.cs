@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PersonnelDepartment.Models;
 
 namespace PersonnelDepartment
 {
@@ -267,7 +268,7 @@ namespace PersonnelDepartment
                 Address = "Адреса 2",
                 Group = group4,
                 Department = department4,
-                Childrens = new List<Student> { student7 }
+                Childrens = new List<Person> { student7 }
             };
             student7.Parent = student11;
 
@@ -305,7 +306,7 @@ namespace PersonnelDepartment
                 Department = department4
             };
 
-            Parent parent1 = new Parent
+            Person parent1 = new Person
             {
                 LastName = "Думіна",
                 FirstName = "Людмила",
@@ -313,7 +314,7 @@ namespace PersonnelDepartment
                 Gender = "Жінка",
                 PassportData = new Passport("140008"),
                 Address = "Адреса 2",
-                Childrens = new List<Student> { student1, student5 }
+                Childrens = new List<Person> { student1, student5 }
             };
 
             student1.Parent = parent1;
@@ -322,7 +323,7 @@ namespace PersonnelDepartment
             teacher6.Parent = teacher2;
             teacher6.Group = group3;
             teacher6.Department = department3;
-            teacher2.Childrens = new List<Student> { teacher6 };
+            teacher2.Childrens = new List<Person> { teacher6 };
 
             group1.GroupLeader = student1;
             group2.GroupLeader = student4;
