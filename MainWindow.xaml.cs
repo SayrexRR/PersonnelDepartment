@@ -22,17 +22,18 @@ namespace PersonnelDepartment
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string GroupText = "Групи";
+        private const string FacultyText = "Факультети";
+
         private UniversityDirectory universityDirectory = new UniversityDirectory();
         private List<PersonsView> personsView = new List<PersonsView>();
-        private const string groupText = "Групи";
-        private const string facultyText = "Факультети";
+        
 
 
         public MainWindow()
         {
             universityDirectory = Initializer.Initialize();
             InitializeComponent();
-            filterLabel.Content = "Фільтр";
             filter1.Visibility = Visibility.Hidden;
             filterLabel.Visibility = Visibility.Hidden;
 
@@ -80,7 +81,7 @@ namespace PersonnelDepartment
 
                 persons.ItemsSource = personsView.Where(s => s.IsStudent);
 
-                filterLabel.Content = groupText;
+                filterLabel.Content = GroupText;
 
                 foreach (var group in universityDirectory.Groups)
                 {
@@ -95,7 +96,7 @@ namespace PersonnelDepartment
 
                 persons.ItemsSource = personsView.Where(t => t.IsTeacher);
 
-                filterLabel.Content = facultyText;
+                filterLabel.Content = FacultyText;
 
                 foreach (var faculty in universityDirectory.Faculties)
                 {
