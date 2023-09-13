@@ -14,6 +14,6 @@ namespace PersonnelDepartment.Models
         public string Gender { get; set; }
         public Passport PassportData { get; set; }
         public string Address { get; set; }
-        public List<Person>? Childrens { get; set; }
+        public List<Person>? Children { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace PersonnelDepartment.View
         public string Group { get; set; } = string.Empty;
         public string Department { get; set; }
         public Person? Parent { get; set; }
-        public List<Person>? Childrens { get; set; }
+        public List<Person>? Children { get; set; }
         public bool IsStudent { get; set; } = false;
         public bool IsTeacher { get; set; } = false;
         public bool IsDepartmentHead { get; set; } = false;

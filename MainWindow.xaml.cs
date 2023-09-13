@@ -24,6 +24,8 @@ namespace PersonnelDepartment
     {
         private UniversityDirectory universityDirectory = new UniversityDirectory();
         private List<PersonsView> personsView = new List<PersonsView>();
+        private const string groupText = "Групи";
+        private const string facultyText = "Факультети";
 
 
         public MainWindow()
@@ -43,7 +45,7 @@ namespace PersonnelDepartment
                 Group = s.Group.Name,
                 Department = s.Department.Name,
                 IsStudent = true,
-                Childrens = s.Childrens,
+                Children = s.Children,
                 Parent = s.Parent
             });
 
@@ -56,7 +58,7 @@ namespace PersonnelDepartment
                 Department = t.Department.Name,
                 IsTeacher = true,
                 IsDepartmentHead = t.IsDepartmentHead,
-                Childrens = t.Childrens
+                Children = t.Children
             });
 
             personsView.AddRange(mappedStudents);
@@ -78,7 +80,7 @@ namespace PersonnelDepartment
 
                 persons.ItemsSource = personsView.Where(s => s.IsStudent);
 
-                filterLabel.Content = "Групи";
+                filterLabel.Content = groupText;
 
                 foreach (var group in universityDirectory.Groups)
                 {
@@ -93,7 +95,7 @@ namespace PersonnelDepartment
 
                 persons.ItemsSource = personsView.Where(t => t.IsTeacher);
 
-                filterLabel.Content = "Факультети";
+                filterLabel.Content = facultyText;
 
                 foreach (var faculty in universityDirectory.Faculties)
                 {
@@ -104,8 +106,7 @@ namespace PersonnelDepartment
             if (tables.SelectedIndex == 2)
             {
                 persons.ItemsSource = personsView
-                    .Where(s => s.IsStudent)
-                    .Where(s => s.Parent is null);
+                    .Where(s => s.IsStudent && s.Parent is null);
             }
 
             if (tables.SelectedIndex == 3)
@@ -116,8 +117,7 @@ namespace PersonnelDepartment
             if (tables.SelectedIndex == 4)
             {
                 persons.ItemsSource = personsView
-                    .Where(t => t.IsTeacher)
-                    .Where(t => t.Childrens is not null);
+                    .Where(t => t.IsTeacher && t.Children is not null);
             }
         }
 
@@ -126,16 +126,14 @@ namespace PersonnelDepartment
             if (tables.SelectedIndex == 0)
             {
                 var filterSudents = personsView
-                    .Where(s => s.IsStudent)
-                    .Where(s => s.Group?.ToUpper() == filter1.SelectedValue?.ToString()?.ToUpper());
+                    .Where(s => s.IsStudent && s.Group?.ToUpper() == filter1.SelectedValue?.ToString()?.ToUpper());
                 persons.ItemsSource = filterSudents;
             }
 
             if (tables.SelectedIndex == 1)
             {
                 var filterTeachers = personsView
-                    .Where(t => t.IsTeacher)
-                    .Where(t => t.Faculty?.ToUpper() == filter1.SelectedValue?.ToString()?.ToUpper());
+                    .Where(t => t.IsTeacher && t.Faculty?.ToUpper() == filter1.SelectedValue?.ToString()?.ToUpper());
                 persons.ItemsSource = filterTeachers;
             }
         }

@@ -268,7 +268,7 @@ namespace PersonnelDepartment
                 Address = "Адреса 2",
                 Group = group4,
                 Department = department4,
-                Childrens = new List<Person> { student7 }
+                Children = new List<Person> { student7 }
             };
             student7.Parent = student11;
 
@@ -314,7 +314,7 @@ namespace PersonnelDepartment
                 Gender = "Жінка",
                 PassportData = new Passport("140008"),
                 Address = "Адреса 2",
-                Childrens = new List<Person> { student1, student5 }
+                Children = new List<Person> { student1, student5 }
             };
 
             student1.Parent = parent1;
@@ -323,7 +323,7 @@ namespace PersonnelDepartment
             teacher6.Parent = teacher2;
             teacher6.Group = group3;
             teacher6.Department = department3;
-            teacher2.Childrens = new List<Person> { teacher6 };
+            teacher2.Children = new List<Person> { teacher6 };
 
             group1.GroupLeader = student1;
             group2.GroupLeader = student4;
