@@ -32,8 +32,9 @@ namespace PersonnelDepartment
 
         public MainWindow()
         {
-            universityDirectory = Initializer.Initialize();
             InitializeComponent();
+
+            universityDirectory = Initializer.Initialize();
             filter1.Visibility = Visibility.Hidden;
             filterLabel.Visibility = Visibility.Hidden;
 
@@ -143,7 +144,10 @@ namespace PersonnelDepartment
         {
             if (persons.SelectedItem != null)
             {
-                PersonsView selectedPerson = (PersonsView)persons.SelectedItem;
+                PersonsView selectedPerson = persons.SelectedItem as PersonsView;
+
+                if (selectedPerson == null)
+                    return;
 
                 EditPerson editPersonView = new EditPerson(selectedPerson);
                 editPersonView.ShowDialog();
